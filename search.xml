@@ -4,6 +4,27 @@
   
     
     <entry>
+      <title>DDD领域驱动设计</title>
+      <link href="/2023/07/14/DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/"/>
+      <url>/2023/07/14/DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/</url>
+      
+        <content type="html"><![CDATA[<h1 id="DDD领域驱动设计"><a href="#DDD领域驱动设计" class="headerlink" title="DDD领域驱动设计"></a>DDD领域驱动设计</h1><h2 id="什么是领域驱动设计"><a href="#什么是领域驱动设计" class="headerlink" title="什么是领域驱动设计"></a>什么是领域驱动设计</h2><p>又被称作基于领域的工程设计。</p><p><strong>那么什么是领域？</strong></p><p>我们暂且可以将其理解为<strong>业务问题的范畴</strong>。比如说打扮自己这项业务就可以分为购买衣服、化妆和健身三个领域，而购买衣服这一领域就包括了挑衣服，试衣服和付款。</p><p>总的来说领域驱动设计其实就是将业务上要做的一件<strong>大事</strong>,通过推演和抽象<strong>拆分成多个内聚的领域。</strong></p><h2 id="DDD名词概念"><a href="#DDD名词概念" class="headerlink" title="DDD名词概念"></a>DDD名词概念</h2><h3 id="什么是DP"><a href="#什么是DP" class="headerlink" title="什么是DP"></a>什么是DP</h3><p>Domain Primitive，在DDD中DP可以说是一切模型、方法、架构的基础，他是在特定领域、拥有精确定义、可以自我验证、拥有行为的对象，可以认为是领域的最小组成部分。</p><p>DP的三条原则：</p><ul><li>让隐性的概念显性化：比如手机号码是具有区号的，如果用String来记录手机号码的话就记录不了区号，如果自行创建一个DP对象，里面包括了手机号码和区号等属性，就能做到将隐性概念显性化的。</li><li>让隐性的上下文显性化：隐性的概念都显性化之后，隐性的上下文自然也显性化了。</li><li>封装多对象行为：一个DP可以封装多个DP。</li></ul><h3 id="什么是Entity"><a href="#什么是Entity" class="headerlink" title="什么是Entity"></a>什么是Entity</h3><p>和DP相比，他俩都是<strong>充血</strong>的，但是Entity是有状态的，DP是组成实体的基础类型，Entity则是有状态的领域实体。</p><p>举个例子： 买门票，如果门票有指定位置，那么这个位置就是有状态的Entity，程序需要通过他的唯一id追踪他的状态，预定状态和行列数等等，如果没有指定位置，进到里面随便坐，那么就是无状态的DP，程序只需要知道座位的总数。</p><h3 id="什么是ACL防腐层"><a href="#什么是ACL防腐层" class="headerlink" title="什么是ACL防腐层"></a>什么是ACL防腐层</h3><p>将两个不同的领域界定开，使得两者结构不受对方的影响，可以通过接口的形式，对外提供<br>访问接口，这样即使业务逻辑产生变化，也不会影响别的系统，如果要进行转义，也可以在防腐层内完成。</p><h3 id="有的没的都概览"><a href="#有的没的都概览" class="headerlink" title="有的没的都概览"></a>有的没的都概览</h3><ul><li>DP: 抽象并封装自检和一些隐性属性的计算逻辑，且这些属性是无状态的。</li><li>Entity: 抽象并封装单对象有状态的逻辑。</li><li>Domain Service: 抽象并封装<strong>多对象</strong>的有状态逻辑。</li><li>Repository: 抽象并封装外部数据访问逻辑。</li></ul><h2 id="DDD思想下的编码过程"><a href="#DDD思想下的编码过程" class="headerlink" title="DDD思想下的编码过程"></a>DDD思想下的编码过程</h2><ol><li>首先对需要处理的业务问题进行总览。</li><li>然后领域对象(Entity) 进行划分，明确每个领域对象的包含的信息和职责边界并进行跨对象，多对象的逻辑组织 (Domain Service)。</li><li>接着在上层应用中根据业务描述去编排Entity和Domain Service。</li><li>最后再做一些下水道（脏，耦合高）工作，去对下层的数据访问，RPC调用去做一些具体实现。</li></ol><h2 id="聚合"><a href="#聚合" class="headerlink" title="聚合"></a>聚合</h2><p>聚合是对存在引用关系的一组对象的封装，他的目的就是屏蔽掉内部对象之间复杂的关联关系只对外暴露统一接口。<br>例子：在写论文时的各种步骤聚合在一起就是一个与写论文相关的聚合。</p><img src="/2023/07/14/DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/1.png" class="" title="聚合概念"><h3 id="聚合根"><a href="#聚合根" class="headerlink" title="聚合根"></a>聚合根</h3><p>聚合根是整个聚合当中唯一能够被外部引用的对象，也就是说聚合所暴露的接口只允许操作根对象。</p><h3 id="边界"><a href="#边界" class="headerlink" title="边界"></a>边界</h3><p>判断哪些对象可以被划入聚合的条件</p><h3 id="注销微信账号的例子："><a href="#注销微信账号的例子：" class="headerlink" title="注销微信账号的例子："></a>注销微信账号的例子：</h3><p>注销的时候需要检查钱包里的余额，同时还要检查绑定的银行卡，但是聊天消息微信没有保存，所以就不用管了</p><img src="/2023/07/14/DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/3.png" class="" title="注销微信账号的例子"><img src="/2023/07/14/DDD%E9%A2%86%E5%9F%9F%E9%A9%B1%E5%8A%A8%E8%AE%BE%E8%AE%A1/2.png" class="" title="聚合接口写法"><p>这里手机号就是微信账号的聚合根</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> DDD </tag>
+            
+            <tag> 领域驱动设计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>Docker学习笔记</title>
       <link href="/2023/06/09/Docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
       <url>/2023/06/09/Docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
